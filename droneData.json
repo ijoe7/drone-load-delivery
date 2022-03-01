@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "621dcc595828a9f63705da38",
+    "index": 0,
+    "serialNumber": "621dcc59e41ac47134be84ce",
+    "model": "heavyweight",
+    "weight": 260,
+    "battery": "5%",
+    "state": "loaded"
+  },
+  {
+    "_id": "621dcc5953e153f395512eb7",
+    "index": 1,
+    "serialNumber": "621dcc5949ce7b6efed93d6b",
+    "model": "lightweight",
+    "weight": 317,
+    "battery": "34%",
+    "state": "loading"
+  },
+  {
+    "_id": "621dcc591f3b1af2e403caa8",
+    "index": 2,
+    "serialNumber": "621dcc59bd34bef2094900ba",
+    "model": "lightweight",
+    "weight": 128,
+    "battery": "71%",
+    "state": "delivered"
+  },
+  {
+    "_id": "621dcc59ab80ab14696821eb",
+    "index": 3,
+    "serialNumber": "621dcc59648f81ad9e5d5421",
+    "model": "lightweight",
+    "weight": 275,
+    "battery": "7%",
+    "state": "delivering"
+  },
+  {
+    "_id": "621dcc59939c427170496050",
+    "index": 4,
+    "serialNumber": "621dcc595eef8763269a3309",
+    "model": "lightweight",
+    "weight": 274,
+    "battery": "88%",
+    "state": "loaded"
+  },
+  {
+    "_id": "621dcc59aa817a49da6562de",
+    "index": 5,
+    "serialNumber": "621dcc599fd9c37ca66a0c33",
+    "model": "heavyweight",
+    "weight": 301,
+    "battery": "89%",
+    "state": "delivering"
+  },
+  {
+    "_id": "621dcc5999a044984f991269",
+    "index": 6,
+    "serialNumber": "621dcc59f5086d823cfd1676",
+    "model": "lightweight",
+    "weight": 139,
+    "battery": "76%",
+    "state": "idle"
+  },
+  {
+    "_id": "621dcc5948d023a860434e2a",
+    "index": 7,
+    "serialNumber": "621dcc599fabb6f081e8455a",
+    "model": "cruiserweight",
+    "weight": 406,
+    "battery": "17%",
+    "state": "delivered"
+  },
+  {
+    "_id": "621dcc593de6f9884ed825f5",
+    "index": 8,
+    "serialNumber": "621dcc59be204d346e279d33",
+    "model": "lightweight",
+    "weight": 454,
+    "battery": "46%",
+    "state": "loading"
+  },
+  {
+    "_id": "621dcc59e037c79e16fda8f3",
+    "index": 9,
+    "serialNumber": "621dcc59e2b88ced8818e729",
+    "model": "heavyweight",
+    "weight": 300,
+    "battery": "96%",
+    "state": "loaded"
+  }
+]
