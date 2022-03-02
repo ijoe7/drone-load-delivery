@@ -23,7 +23,7 @@ run npm install
 
 ## Work-done
 ### Created Endpoints for:
-- #Drone
+- Drone
     - Register Multiple Drones
     - Register Single Drone
     - Get Single Drone by Serial Number
@@ -35,7 +35,7 @@ run npm install
     - Update Drone Information
     - Delete Drone By Serial Number
 
-- #Load
+- Load
     - Register Load
     - Get Load By Code
     - Get All Loads
