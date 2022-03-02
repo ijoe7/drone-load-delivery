@@ -72,6 +72,38 @@ exports.getDrone = async (req, res, next) => {
     }
 };
 
+exports.getAllDrones = async (req, res, next) => {
+    try {
+        let allDrones = await Drone.findAll({
+            include: ["loads"]
+        });
+        res.status(200).json({
+            status: "success",
+            message: "Drones found successfully",
+            data: allDrones
+        })
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json(err);
+    }
+};
+
+exports.getAvailableDrones = async (req, res, next) => {
+    try {
+        let allDrones = await Drone.findAll({
+            where: { status: "idle" }
+        });
+        res.status(200).json({
+            status: "success",
+            message: "Drones found successfully",
+            data: allDrones
+        })
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json(err);
+    }
+};
+
 exports.loadingADrone = async (req, res, next) => {
     try {
         let request = ["serial_number", "code"];
@@ -186,23 +218,44 @@ exports.periodicDroneBatteryCheck = async (req, res, next) => {
     try {
         let drones = await Drone.findAll();
         let currentDate = new Date();
-        let data = {
+        let newData = {
             date: currentDate,
-            drones
+            drones,
         };
-        // for (let i = 0; i < drones.length; i++) {
-        //     let drone = drones[i];
-        // }
-        let writeToJSONFile = JSON.stringify(data);
-        fs.writeFileSync(path.join(__dirname + "/" + "../data/audit_event_log.json"), writeToJSONFile, (err) => {
-            if (err) throw err;
-            console.log("The file has been saved!");
-        });
-        res.status(201).json({
-            status: "success",
-            message: "Drone battery check completed successfully and recorded in audit log",
-            data: drones
-        })
+        let filePath = path.join(__dirname + "/" + "../data/audit_event_log.json");
+        let fileExists = fs.existsSync(filePath);
+        console.log(fileExists);
+        if (!fileExists) {
+            let newDataArray = [newData];
+            let writeToJSONFile = JSON.stringify(newDataArray);
+            fs.writeFile(filePath, writeToJSONFile, (err) => {
+                if (err) throw err;
+                console.log("File created!");
+                return res.status(201).json({
+                    status: "success",
+                    message: "File created successfully",
+                    data: newData
+                });
+            });
+        } else {
+            fs.readFile(filePath, (err, data) => {
+                if (err) throw err;
+                let dataArray = JSON.parse(data);
+                console.log(dataArray);
+                dataArray.push(newData);
+                console.log(dataArray);
+                let writeToJSONFile = JSON.stringify(dataArray);
+                fs.writeFile(filePath, writeToJSONFile, (err) => {
+                    if (err) throw err;
+                    console.log("File updated!");
+                    return res.status(201).json({
+                        status: "success",
+                        message: "Drone battery check completed successfully and recorded in audit log",
+                        data: drones
+                    })
+                });
+            });
+        }
     } catch (err) {
         console.log(err);
         return res.status(400).json(err);
