@@ -54,9 +54,9 @@ exports.registerMultipleDrones = async (req, res, next) => {
 
 exports.getDrone = async (req, res, next) => {
     try {
-        let request = ["serial_number"];
-        let data = helper.validateParams(req, next, request);
-        let drone = await Drone.findOne({ where: { serial_number: data.serial_number } });
+        const { serial_number } = req.params;
+        if (!serial_number) return res.status(400).json({ message: "Serial number is required" });
+        let drone = await Drone.findOne({ where: { serial_number: serial_number } });
         if (!drone) return res.status(400).json({ message: "Drone not found" });
         let droneData = await Drone.findByPk(drone.id, {
             include: ["loads"]
@@ -112,8 +112,11 @@ exports.loadingADrone = async (req, res, next) => {
         if (!drone) return res.status(400).json({ message: "Drone not found" });
         let load = await Load.findOne({ where: { code: data.code } });
         if (!load) return res.status(400).json({ message: "Load not found" });
+        // Check if load is already loaded
+        if (load.droneId) return res.status(400).json({ message: "Load is already loaded" });
         // Check if drone is idle or is already loading
-        if (drone.status !== "idle" || drone.status !== "loading") return res.status(400).json({ message: "Drone is not idle or loading" });
+        console.log(drone.status);
+        if (drone.status !== "idle" && drone.status !== "loading") return res.status(400).json({ message: "Drone is not idle or loading" });
         // Check drone battery percentage
         if (drone.battery_percentage < 25) {
             drone.status = "idle";
@@ -159,6 +162,8 @@ exports.unloadingADrone = async (req, res, next) => {
         let load = await Load.findOne({ where: { code: data.code } });
         if (!load) return res.status(400).json({ message: "Load not found" });
         if (drone.status !== "loading") return res.status(400).json({ message: "Drone is not loading" });
+        // Check if load is already loaded
+        if (!load.droneId) return res.status(400).json({ message: "Load is not loaded" });
         // Reduce weight
         let newWeight = drone.weight_gr - load.weight_gr;
         // Update Load
@@ -184,21 +189,23 @@ exports.unloadingADrone = async (req, res, next) => {
 
 exports.unloadingDeliveredLoadDrone = async (req, res, next) => {
     try {
-        let request = ["serial_number", "code"];
+        let request = ["serial_number"];
         let data = helper.validateParams(req, next, request);
-        let drone = await Drone.findOne({ where: { serial_number: data.serial_number } });
+        let drone = await Drone.findOne({
+            where: { serial_number: data.serial_number },
+            include: ["loads"]
+        });
         if (!drone) return res.status(400).json({ message: "Drone not found" });
-        let load = await Load.findOne({ where: { code: data.code } });
-        if (!load) return res.status(400).json({ message: "Load not found" });
-        if (drone.status !== "loading") return res.status(400).json({ message: "Drone is not loading" });
-        // Reduce weight
-        let newWeight = drone.weight_gr - load.weight_gr;
+        if (drone.status !== "delivering") return res.status(400).json({ message: "Drone is not delivering" });
         // Update Load
-        load.status = "delivered";
-        load.droneId = null;
-        await load.save();
+        for (let i = 0; i < drone.loads.length; i++) {
+            drone.weight_gr -= drone.loads[i].weight_gr;
+            drone.loads[i].status = "delivered";
+            drone.loads[i].droneId = null;
+            await drone.loads[i].save();
+        }
         // Update Drone
-        drone.weight_gr = newWeight;
+        drone.status = "delivered";
         await drone.save();
         let droneData = await Drone.findByPk(drone.id, {
             include: ["loads"]
@@ -224,7 +231,6 @@ exports.periodicDroneBatteryCheck = async (req, res, next) => {
         };
         let filePath = path.join(__dirname + "/" + "../data/audit_event_log.json");
         let fileExists = fs.existsSync(filePath);
-        console.log(fileExists);
         if (!fileExists) {
             let newDataArray = [newData];
             let writeToJSONFile = JSON.stringify(newDataArray);
@@ -241,9 +247,7 @@ exports.periodicDroneBatteryCheck = async (req, res, next) => {
             fs.readFile(filePath, (err, data) => {
                 if (err) throw err;
                 let dataArray = JSON.parse(data);
-                console.log(dataArray);
                 dataArray.push(newData);
-                console.log(dataArray);
                 let writeToJSONFile = JSON.stringify(dataArray);
                 fs.writeFile(filePath, writeToJSONFile, (err) => {
                     if (err) throw err;
@@ -287,3 +291,20 @@ exports.updatingDroneInfo = async (req, res, next) => {
     }
 }
 
+exports.deleteDrone = async (req, res, next) => {
+    try {
+        const { serial_number } = req.params;
+        if (!serial_number) return res.status(400).json({ message: "Serial number is required" });
+        let drone = await Drone.findOne({ where: { serial_number: serial_number } });
+        if (!drone) return res.status(400).json({ message: "Drone not found" });
+        await drone.destroy();
+        res.status(201).json({
+            status: "success",
+            message: "Drone deleted successfully",
+            data: drone
+        })
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json(err);
+    }
+}
