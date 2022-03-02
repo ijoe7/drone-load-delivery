@@ -1,0 +1,43 @@
+[
+  {
+    "model": "heavyweight",
+    "battery_percentage": 15
+  },
+  {
+
+    "model": "lightweight",
+    "battery_percentage": 34
+  },
+  {
+    "model": "middleweight",
+    "battery_percentage": 71
+  },
+  {
+    "model": "lightweight",
+    "battery_percentage": 10
+  },
+  {
+    "model": "middleweight",
+    "battery_percentage": 88
+  },
+  {
+    "model": "heavyweight",
+    "battery_percentage": 89
+  },
+  {
+    "model": "lightweight",
+    "battery_percentage": 76
+  },
+  {
+    "model": "cruiserweight",
+    "battery_percentage": 17
+  },
+  {
+    "model": "lightweight",
+    "battery_percentage": 46
+  },
+  {
+    "model": "heavyweight",
+    "battery_percentage": 96
+  }
+]
